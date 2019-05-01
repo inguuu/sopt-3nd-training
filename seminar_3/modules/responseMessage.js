@@ -17,4 +17,13 @@ module.exports = {
 
     USER_SELECT_SUCCESS: "유저 조회 성공",
     NO_USER: "존재하지 않는 학생입니다",
+   
+    DUPLICATED_TITLE: "중복된 제목이 있습니다.",
+
+    SUCCESS_INPUT:"게시글 등록 성공",
+    SUCCESS_BOARD:"게시글 조회 성공",
+    NO_ID:"ID와 일치하는 게시글이 없습니다.",
+    SUCCESS_MODIFY:"게시글 수정 성공",
+    SUCCESS_DELETE:"게시글 삭제 성공",
+    PASSWORD_NOT_CORRECT:"비밀번호가 일치하지 않습니다.",
 };

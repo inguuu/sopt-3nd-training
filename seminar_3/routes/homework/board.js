@@ -7,6 +7,7 @@ const fs = require('fs');
 const titleCheck =  require('../../modules/titleCheck');//중복 확인 모듈
 const readCsv =  require('../../modules/readCsv');
 const createdAt = require('../../modules/createdAt');
+const writeCsv = require('../../modules/writeCsv')
 
 const util = require('../../modules/utils');
 const statusCode = require('../../modules/statusCode');
@@ -43,20 +44,11 @@ router.post('/', async function(req, res, next) {
         newItem.salt= salt;
       
         boardItems.push(newItem);
+        writeCsv(boardItems);
 
-        const options = { 
-          data: boardItems,
-          fields: ['id', 'title','content','createdAt','hashedPw','salt'],
-          header: true
-      }
-          //console.log(options.data);
-          const BoardCsv = await json2csv(options);
-          await fs.writeFileSync('boardinfo.csv', BoardCsv);     
-          res.status(200).send(util.successTrue(statusCode.OK, resMessage.SUCCESS_INPUT));
+        res.status(200).send(util.successTrue(statusCode.OK, resMessage.SUCCESS_INPUT));
     }
 });
-
-
 
 //METHOD GET
 router.get('/:id', async function(req, res, next) {
@@ -104,16 +96,10 @@ router.put('/', async function(req, res, next) {
           boardItems[i].hashedPw=hashedPw.toString('base64');
           boardItems[i].salt= salt;
     
-          const options = { 
-            data: boardItems,
-            fields: ['id', 'title','content','createdAt','hashedPw','salt'],
-            header: true
-          }
-          const BoardCsv = await json2csv(options);
-          await fs.writeFileSync('boardinfo.csv', BoardCsv); 
+          writeCsv(boardItems);
   
-        console.log("수정 성공");
-        res.status(200).send(util.successTrue(statusCode.OK, resMessage.SUCCESS_MODIFY,boardItems[i]));
+          console.log("수정 성공");
+          res.status(200).send(util.successTrue(statusCode.OK, resMessage.SUCCESS_MODIFY,boardItems[i]));
         
         }else{
           console.log("비밀번호 오류");
@@ -140,14 +126,9 @@ router.delete('/', async function(req, res, next) {
     const salt= boardItems[i].salt;
     const hashedPw= await crypto.pbkdf2(req.body.pw.toString(),salt,1000, 32, 'SHA512');
     if(boardItems[i].hashedPw==hashedPw.toString('base64')){//비밀번호 확인
-      boardItems.splice(i,1);
-      const options = { 
-        data: boardItems,
-        fields: ['id', 'title','content','createdAt','hashedPw','salt'],
-        header: true
-      }
-        const BoardCsv = await json2csv(options);
-        await fs.writeFileSync('boardinfo.csv', BoardCsv); 
+       
+        boardItems.splice(i,1);
+        writeCsv(boardItems);
         res.status(200).send(util.successTrue(statusCode.OK, resMessage.SUCCESS_DELETE));
         console.log("삭제 성공");
       }else{
